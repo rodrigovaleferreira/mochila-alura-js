@@ -29,9 +29,12 @@ form.addEventListener("submit", (evento) => {
 
         atualizaElemento(itemAtual)
 
-    } else{
+        /*atualizar o localstorage após fazer uma alteração na quantidade de produtos */
+        itens[itens.findIndex(elemento  => elemento.id === existe.id)] = itemAtual
 
-        itemAtual.id = itens.length
+    } else{
+        /*outra forma de fazer if/else (? :) */
+        itemAtual.id = itens[itens.length-1] ?  (itens[itens.length-1]).id + 1 : 0;
         criaElemento(itemAtual)
         /* puxar o item atual pra dentro do array (colocar cada elemento inserido pelo usuário no array) */
         itens.push(itemAtual)
@@ -59,6 +62,8 @@ function criaElemento(item){
     novoItem.appendChild (numeroItem)
     novoItem.innerHTML += item.nome
 
+    novoItem.appendChild(botaoDeleta(item.id))
+
  
     lista.appendChild(novoItem)
 
@@ -68,3 +73,23 @@ function atualizaElemento (item) {
     document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade
 }
 
+
+function botaoDeleta(id){
+    const elementoBotao = document.createElement("button")
+    elementoBotao.innerText = "X"
+
+    elementoBotao.addEventListener("click", function(){
+        /*parent node para remover o elemento pai, se fizer apenas usando o this ira remover apenas o botao, para remover tudo usar o parentNode */
+        deletaElemento(this.parentNode, id)
+    })
+    return elementoBotao
+}
+
+function deletaElemento (tag, id){
+    tag.remove()
+
+    /*remover um item do localstorage usar o splice */
+    itens.splice(itens.findIndex(elemento => elemento.id === id), 1)
+
+    localStorage.setItem("itens",JSON.stringify( itens))
+}
